@@ -30,12 +30,31 @@ endf
 func! This_mapping()
   " save last search and restore
   let last_search=@/
-  " save all buffer, mark current cursor position
-  " normal copy the line matching "vimF12" in @r
-  exec ":wa\<cr>mc1G/vimF12:\<cr>f:w\"ry$:"
-  silent call Tmux_run(g:pane, @r)
+
+  " save all buffers
+  wa
+
+  " mark current cursor position in mark 'c
+  exe "norm mc"
+
+  " search the line matching the pattern [] avoid find itself
+  let found=search("vimF12[:]", 'w')
+
+  if found != 0
+    let old_r=@r
+    let @r=''
+
+    " cursor has been moved, copy the command in register @r
+    exe 'norm f:w"ry$'
+    if @r != ''
+      silent call Tmux_run(g:pane, @r)
+    endif
+
+    "let @r=old_r
+  endif
+
   " return back to c marker
-  exec "'c"
+  exe "norm 'c"
   redraw!
   let @/=last_search
 endf
