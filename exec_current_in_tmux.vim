@@ -3,7 +3,9 @@
 "
 " tmux new -s displpay
 
-let pane=1
+let session="display"
+let window=session.":0"
+let pane=window.".0"
 
 " command vim in @c
 let @c="0\"ry$"
@@ -19,7 +21,7 @@ func! Tmux_run(pane, cmd)
 endf
 
 " mapping
-" normal select all 
+" normal select all
 nmap <f12> @c:silent call Tmux_run(pane, @r)<cr><c-l>
 
 "" visual use current selection

@@ -1,6 +1,7 @@
 " with tmux
 " run the code given by vimF12: in other tmux
 "
+" See: exec_current_in_tmux.vim for exec the line under cursor
 
 " same tmux
 "let pane=1
@@ -59,5 +60,5 @@ func! This_mapping()
   let @/=last_search
 endf
 
-" The mapping
+" The code in comment is run
 nmap <f12> :silent call This_mapping()<cr><c-l>
