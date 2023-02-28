@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Start 2 tmux in two terminal in xfce Linux
+# me + display
+
+# see also: which reads what to exec in vimF12 comment string
+# f12_vim_map_exec.vim
+vim_source=~/code/2tmux/exec_current_in_tmux.vim
+
+session=display
+xfce4-terminal -T "$session" -e "tmux new -s $session"
+
+# change current title, $PS1 needs to not change it back!
+echo -ne "\033]0;me\007"
+
+# wait a bit to let it set…
+sleep 0.1
+# raise this window named "me"
+winid=$(wmctrl -l | awk '$4 == "me" { print $1}')
+wmctrl -i -a $winid
+
+# exampe write to other term
+tmux send-keys -t "${session}:0.0" "# I'm display, in me 'source $vim_source'"
+
+# last command here, run 2nd tmux here, we are in the command
+tmux new -s me

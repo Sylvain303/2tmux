@@ -8,25 +8,36 @@ let window=session.":0"
 let pane=window.".0"
 
 func! Tmux_run(pane, cmd)
-  let f=expand('%:t')
-  " # need to be escaped
-  " Escape + # in bash = disable command
-  let cmd="!tmux send-keys -t ".a:pane
+  let cmd_base="!tmux send-keys -t ".a:pane
+  " let f=expand('%:t')
+
   " escape bash single quote
   " https://stackoverflow.com/questions/1250079/how-to-escape-single-quotes-within-single-quoted-strings
   let mycmd=substitute(a:cmd, "'", "'\"'\"'", "g")
+  " handle mutiline ending with \\
+  let mycmd=substitute(mycmd, "\\", "\\\\", "g")
   " escaped # as vim change it to last filename
   let mycmd=escape(mycmd, "#")
   " remove leading blank so command go to bash history
   let mycmd=substitute(mycmd, '^\s\+', '', '')
-  let cmd.=" Escape '\\#' '".mycmd."' Enter"
-  exec cmd
+  " Escape + # in bash = disable command
+  " send a safe ESC + # to disable any previous line started in the shell
+  exec cmd_base." Escape '\\#'"
+  if mycmd =~ '\n'
+    for l in split(mycmd, '\n')
+      let cmd=cmd_base." '".l."' Enter"
+      exec cmd
+    endfor
+  else
+    exec cmd_base." '".mycmd."' Enter"
+  endif
 endf
 
 "========================================= helpers
 " command vim in @c text to be sent to tmux in @r
 " this register is executed before the call to Tmux_run()
-let @c="0\"ry$"
+" copy the current line in register @r
+let @c="mc0\"ry$`c"
 
 "========================================= bats
 " store current <CWORD> for runing test with bats -f
@@ -37,6 +48,5 @@ let @c="0\"ry$"
 " normal select all with the macro in @c
 nmap <f12> @c:silent call Tmux_run(pane, @r)<cr><c-l>
 
-"" visual use current selection
-"let vcmd="call Write_out(@c)"
-"vmap <f12> "cy:exec vcmd<cr>:silent exec cmd<cr>:nohls<cr><c-l>
+"" visual use current selection copied in register @r
+vmap <f12> "ry:silent call Tmux_run(pane, @r)<cr><c-l>
