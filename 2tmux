@@ -15,8 +15,8 @@ echo -ne "\033]0;me\007"
 
 # wait a bit to let it set…
 sleep 0.1
-# raise this window named "me"
-winid=$(wmctrl -l | awk '$4 == "me" { print $1}')
+# raise this window named "me" as changing PS1 in xfce changes the title of the window
+winid=$(wmctrl -l | awk '/ - me/ { print $1}')
 wmctrl -i -a $winid
 
 # exampe write to other term
