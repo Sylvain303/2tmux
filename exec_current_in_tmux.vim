@@ -16,8 +16,10 @@ func! Tmux_run(pane, cmd)
   let mycmd=substitute(a:cmd, "'", "'\"'\"'", "g")
   " handle mutiline ending with \\
   let mycmd=substitute(mycmd, "\\", "\\\\", "g")
-  " escaped # as vim change it to last filename
-  let mycmd=escape(mycmd, "#")
+  " escape some vim own specials chars:
+  " - # = last filename
+  " - % = current filename
+  let mycmd=escape(mycmd, "#%")
   " remove leading blank so command go to bash history
   let mycmd=substitute(mycmd, '^\s\+', '', '')
   " Escape + # in bash = disable command
