@@ -19,7 +19,7 @@ func! Tmux_run(pane, cmd)
   " escape some vim own specials chars:
   " - # = last filename
   " - % = current filename
-  let mycmd=escape(mycmd, "#%")
+  let mycmd=escape(mycmd, "#%!")
   " remove leading blank so command go to bash history
   let mycmd=substitute(mycmd, '^\s\+', '', '')
   " Escape + # in bash = disable command
